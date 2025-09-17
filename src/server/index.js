@@ -1,23 +1,29 @@
-import ws from "ws";
+import { WebSocketServer } from "ws";
+import dotenv from "dotenv";
 
-const WebSocket = ws();
-// abrir uma portar
-const server = WebSocket.server({
-    port: 8080
+dotenv.config();
+
+const server = new WebSocketServer({ port: process.env.PORT || 8080 })
+
+const onMessage = (ws, data) => {
+    server.broadcast(data.toString());
+}
+function broadcast(msg) {
+    if (!this.clients) return;
+    this.clients.forEach(client => {
+        if (client.readyState == WebSocket.OPEN) {
+            client.send(msg)
+        }
+    });
+}
+server.broadcast = broadcast;
+server.on('connection', (ws, req) => {
+    console.info("Cliente connectado !");
+    clients.push(ws);
+    ws.on('message', data => onMessage(ws, data))
 });
-// criar a lista de sockets
-let sockets = [];
-//criar a ponte de comunicacao
-server.on('conection', function (socket) {
-    sockets.push(socket);
-    // quando receber uma mensagem, enviar ela para todos os sockets
-    socket.on('message', function (msg) {
-        sockets.forEach(s => s.send());
-    })
-    // quando a conexao de um socket e fechada, removemos o socket do array
-    socket.on('close', function(){
-        sockets = sockets.filter(s=> s != socket)      
-    })
-})
+
+
+
 
 
