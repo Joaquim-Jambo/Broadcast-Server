@@ -81,7 +81,5 @@ This project is based on the [Broadcast Server challenge](https://roadmap.sh/pro
 ## 👨‍💻 Author
 
 **Joaquim Jambo**
-
-```
 ```
 
