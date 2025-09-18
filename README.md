@@ -14,6 +14,9 @@ It allows multiple clients to connect and send messages to each other in real ti
 
 ---
 
+Aqui está o teu conteúdo já formatado corretamente em **Markdown**:
+
+````markdown
 ## 📦 Installation
 
 1. Clone the repository:
@@ -80,3 +83,5 @@ This project is based on the [Broadcast Server challenge](https://roadmap.sh/pro
 **Joaquim Jambo**
 
 ```
+```
+
