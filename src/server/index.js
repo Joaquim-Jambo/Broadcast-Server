@@ -1,46 +1,39 @@
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 export const startServer = () => {
-    const server = new WebSocketServer({ port: process.env.PORT || 8080 })
-    const onMessage = (ws, data) => {
-        console.log("📥 Mensagem recebida:", data.toString());
-        server.broadcast(data.toString());
-    }
+    const server = new WebSocketServer({ port: process.env.PORT || 8080 });
+
     function broadcast(msg) {
-        if (!this.clients) return;
-        this.clients.forEach(client => {
-            if (client.readyState == WebSocket.OPEN) {
-                client.send(`⚡ ${client.name} ${msg}`)
+        for (const client of server.clients) {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(msg);
             }
-        });
+        }
     }
-    server.broadcast = broadcast;
-    server.on('connection', (ws, req) => {
-        const url = new URL(req.url, `http://${req.headers.host}`)
-        const name = url.searchParams.get("name") || "desconhecido";
+    server.on("connection", (ws, req) => {
+        const url = new URL(req.url, `http://${req.headers.host}`);
+        const name = url.searchParams.get("name") || "unknown";
         ws.name = name;
-        console.log(`🟢 ${ws.name} Entrou !`);
-        ws.on('message', (ws, data) => {
-            for (const client of ws.client) {
-                client.send(`🟢 ${client.name} entrou!`)
-            }
-        })
-        ws.on('message', data => onMessage(ws, data))
-        ws.on('close', () => {
-            for (const client of server.clients) {
-                if (client.readyState === WebSocket.OPEN) {
-                    client.send(`🔴 ${ws.name} saiu!`)
-                }
-            }
-            console.log(`🔴 ${ws.name} Saiu !`);
+
+        console.log(`⚡ [${ws.name}] joined!`);
+        broadcast(`🟢 [${ws.name}] joined!`);
+
+        ws.on("message", (data) => {
+            console.log(`📥 Message received [${ws.name}]:`, data.toString());
+            broadcast(`⚡ [${ws.name}] ${data.toString()}`);
         });
-        ws.send("👋 Olá! Você está conectado ao servidor WebSocket.");
+
+        ws.on("close", () => {
+            console.log(`🔴 [${ws.name}] left!`);
+            broadcast(`🔴 [${ws.name}] left!`);
+        });
+        ws.send("👋 Hello! You are connected to the WebSocket server.");
     });
-    console.log(`🖥️ Servidor WebSocket rodando na porta ${process.env.PORT || 8080}`);
-}
 
-
-
+    console.log(
+        `🚀 WebSocket server running on port ${process.env.PORT || 8080}`
+    );
+};
