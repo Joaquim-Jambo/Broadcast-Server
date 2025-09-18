@@ -4,7 +4,7 @@
   "description": "Um servidor de broadcast em tempo real com Node.js, WebSockets e Yargs",
   "main": "./src/server/index.js",
   "bin": {
-    "broadcast-server": "./bin/broadcast-server.js"
+    "broadcast-server": "./src/bin/broadcast-server.js"
   },
   "scripts": {
     "start": "node ./bin/broadcast-server.js",
@@ -21,6 +21,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "dotenv": "^17.2.2",
     "ws": "^8.18.3",
     "yargs": "^18.0.0"
   },
